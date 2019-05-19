@@ -9,3 +9,8 @@
 - Graph算法原理
 - 机器学习原理
 
+1. 下面先总结常用算子的原理
+- [<font size=+1>distinct算子</font>](./images/distinct算子原理.png)
+
+2. Spark中间某些流程
+- [spark任务执行流程](./images/spark任务流程.png)
