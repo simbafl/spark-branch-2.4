@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="19d70aad-b88d-4698-8c25-5efd0fdaee7b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Pyspark/Broadcast广播变量和setLogLevel日志级别.md" beforeDir="false" afterPath="$PROJECT_DIR$/Pyspark/Broadcast广播变量和setLogLevel日志级别.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pyspark/SparkContext编程入口以及累加器.md" beforeDir="false" afterPath="$PROJECT_DIR$/Pyspark/SparkContext编程入口以及累加器.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pyspark/binaryFiles读取二进制文件.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pyspark/文件加载获取.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,13 +31,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="md" value="6821" />
+          <entry key="md" value="6833" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Bash" value="10" />
-          <entry key="Markdown" value="6714" />
+          <entry key="Markdown" value="6726" />
           <entry key="Python" value="97" />
         </counts>
       </usages-collector>
@@ -48,12 +45,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="FIRST">
-              <first_editor relative-caret-position="180">
-                <caret line="9" selection-start-line="9" selection-end-line="10" />
+              <first_editor relative-caret-position="486">
+                <caret line="23" column="2" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
               </first_editor>
               <second_editor />
             </state>
@@ -64,7 +61,7 @@
         <entry file="file://$PROJECT_DIR$/Pyspark/SparkContext编程入口以及累加器.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="432">
+              <first_editor relative-caret-position="594">
                 <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
               </first_editor>
               <second_editor />
@@ -72,7 +69,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pyspark/addFile加载文件和binaryFiles读取二进制文件.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
@@ -105,12 +102,12 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Pyspark/pyspark模块介绍.md" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/Pyspark/SparkContext编程入口以及累加器.md" />
         <option value="$PROJECT_DIR$/Pyspark/文件加载获取.md" />
         <option value="$PROJECT_DIR$/Pyspark/binaryFiles读取二进制文件.md" />
         <option value="$PROJECT_DIR$/Pyspark/addFile加载文件和binaryFiles读取二进制文件.md" />
         <option value="$PROJECT_DIR$/Pyspark/Broadcast广播变量和setLogLevel日志级别.md" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -216,16 +213,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="FIRST">
-          <first_editor relative-caret-position="180">
-            <caret line="9" selection-start-line="9" selection-end-line="10" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pyspark/文件加载获取.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
@@ -266,21 +253,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Pyspark/addFile加载文件和binaryFiles读取二进制文件.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="1224">
+            <caret line="79" column="8" lean-forward="true" selection-start-line="79" selection-start-column="8" selection-end-line="79" selection-end-column="8" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Pyspark/SparkContext编程入口以及累加器.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="432">
+          <first_editor relative-caret-position="594">
             <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
           </first_editor>
           <second_editor />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pyspark/addFile加载文件和binaryFiles读取二进制文件.md">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="1224">
-            <caret line="79" column="8" lean-forward="true" selection-start-line="79" selection-start-column="8" selection-end-line="79" selection-end-column="8" />
+        <state split_layout="FIRST">
+          <first_editor relative-caret-position="486">
+            <caret line="23" column="2" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
           </first_editor>
           <second_editor />
         </state>
