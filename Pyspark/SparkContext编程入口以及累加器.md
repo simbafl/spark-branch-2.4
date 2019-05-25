@@ -40,3 +40,4 @@ print(rdd2.collect())  # action触发作业的提交
 print(acc.value)
 context.stop()
 ```
+然后执行 spark-submit accumulator.py
