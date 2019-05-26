@@ -12,16 +12,35 @@
 
 #### Python
 1. [pyspark的模块介绍](./Pyspark/pyspark模块介绍.md)
-2. [SparkContext编程入口以及Accumulator累加器详解](./Pyspark/SparkContext编程入口以及累加器.md)
-3. [addFile加载文件和binaryFiles读取二进制文件](./Pyspark/addFile加载文件和binaryFiles读取二进制文件.md)
-4. [Broadcast广播变量和setLogLevel日志级别](./Pyspark/Broadcast广播变量和setLogLevel日志级别.md)
-5. [runJob和parallelize详解](./Pyspark/runJob和parallelize详解.md)
-6. [union和statusTracker方法详解](./Pyspark/union和statusTracker方法详解.md)
-7. [aggregate和aggregateByKey的异同及注意事项](./Pyspark/aggregate和aggregateByKey的异同及注意事项.md)
-8. [collectAsMap和flod方法的理解以及正确使用](./Pyspark/collectAsMap和flod方法的理解以及正确使用.md)
-9. [foreach和foreachPartitions原理以及使用场景和注意事项](./Pyspark/foreach和foreachPartitions原理以及使用场景和注意事项.md)
-10. [histogram和lookup方法的使用详解](./Pyspark/histogram和lookup方法的使用详解.md)
-11. [reduce和sampleStdev和saveAsPickleFile和saveAsTextFile和其他压缩格式](./Pyspark/reduce和sampleStdev和saveAsPickleFile和saveAsTextFile和其他压缩格式.md)
+2. [SparkContext常用函数入口介绍](./Pyspark/SparkContext入口函数.md)
+  - SparkContext编程入口
+  - Accumulator累加器详解
+  - addFile和SparkFiles加载本地文件，HDFS文件，http文件
+  - binaryFiles读取二进制文件
+  - Broadcast广播变量
+  - setLogLevel日志级别
+  - runJob使用
+  - parallelize和range创建RDD详解
+  - union的使用
+  - statusTracker方法讲解
+  - saveAsPickleFile和saveAsTextFile和其他压缩格式
+3. [RDD算子介绍](./Pyspark/RDD算子.md)
+  - RDD算子的介绍
+  - action算子
+    - aggregate
+    - collect
+    - collectAsMap
+    - count
+    - countByKey
+    - countByValue
+    - first
+    - fold
+  - transformation算子
+    
+4. [SparkSQL编程入口](./Pyspark/SparkSQL编程入口SparkSession.md)
+5. [SparkSQL模块简介](./Pyspark/SparkSQL模块简介.md)
+6. [DataFrame创建的多种方式](./Pyspark/DataFrame创建的多种方式.md)
+7. [DataFrame常用函数](./Pyspark/DataFrame.md)
 
 #### Scala
 1. 下面先总结常用算子的原理

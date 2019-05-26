@@ -269,6 +269,7 @@ u'hello'
 21. setLogLevel设置日志级别，通过这个设置会将覆盖任何用户自定义的日志等级设置。取值有：ALL，DUBUG，ERROR，INFO， FATAL， OFF，WARN
 ```bash
 >>> sc.setLogLevel('INFO')
+
 ```
 
 22. getOrCreate得到或者是创建一个SparkContext对象，该方法创建的SparkContext对象为单例对象，该对象可以接收一个Sparkconf对象。
@@ -279,3 +280,44 @@ True
 
 ```
 
+23. statusTracker()方法用于获取StatusTracker对象，通过该对象可以获取活动的jobs的id，活动的stage的id。job的信息，stage的信息。可以使用这个对象来实时监控作业运行的中间状态数据。
+```bash
+>>> t = sc.statusTracker()
+>>> dir(t)
+
+```
+
+24. stop()方法用于停止SparkContext和cluster的连接。一般在程序结束时都要加上，确保作业运行完成之后连接和cluster集群断开。
+
+25. uiWebUrl返回web的url
+```bash
+>>> sc.uiWebUrl
+u'http://192.168.0.106:4044'
+
+```
+
+26. union(rdds) 用于合并多个rdd为一个rdd
+```bash
+>>> rdd1 = sc.parallelize(range(5), 4)
+>>> rdd2 = sc.parallelize(range(10), 2)
+>>> rdd3 = sc.union([rdd1, rdd2])
+>>> rdd3.collect()
+[0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+>>> rdd1.getNumPartitions()
+4
+>>> rdd2.getNumPartitions()
+2
+>>> rdd3.getNumPartitions()
+6
+
+```
+可见union之后，分区数也保存了下来。
+
+27. version获取版本号
+```bash
+>>> sc.version
+u'2.3.0'
+
+```
+
+到此为止，SparkContext入口的常用一些函数总结完毕。
