@@ -12,30 +12,32 @@
 
 #### Python
 1. [pyspark的模块介绍](./Pyspark/pyspark模块介绍.md)
-2. [SparkContext常用函数入口介绍](./Pyspark/SparkContext入口函数.md)
-  - SparkContext编程入口
-  - Accumulator累加器详解
-  - addFile和SparkFiles加载本地文件，HDFS文件，http文件
-  - binaryFiles读取二进制文件
-  - Broadcast广播变量
-  - setLogLevel日志级别
-  - runJob使用
-  - parallelize和range创建RDD详解
-  - union的使用
-  - statusTracker方法讲解
-  - saveAsPickleFile和saveAsTextFile和其他压缩格式
-3. [RDD算子介绍](./Pyspark/RDD算子.md)
-  - RDD算子的介绍
-  - action算子
-    - aggregate
-    - collect
-    - collectAsMap
-    - count
-    - countByKey
-    - countByValue
-    - first
-    - fold
-  - transformation算子
+2. [SparkContext常用函数入口介绍](./Pyspark/SparkContext入口函数.md)  
+主要包括：
+   - SparkContext编程入口
+   - Accumulator累加器详解
+   - addFile和SparkFiles加载本地文件，HDFS文件，http文件
+   - binaryFiles读取二进制文件
+   - Broadcast广播变量
+   - setLogLevel日志级别
+   - runJob使用
+   - parallelize和range创建RDD详解
+   - union的使用
+   - statusTracker方法讲解
+   - saveAsPickleFile和saveAsTextFile和其他压缩格式
+3. [RDD算子介绍](./Pyspark/RDD算子.md)  
+主要包括：
+   - RDD算子的介绍
+   - action算子
+     - aggregate
+     - collect
+     - collectAsMap
+     - count
+     - countByKey
+     - countByValue
+     - first
+     - fold
+   - transformation算子
     
 4. [SparkSQL编程入口](./Pyspark/SparkSQL编程入口SparkSession.md)
 5. [SparkSQL模块简介](./Pyspark/SparkSQL模块简介.md)
