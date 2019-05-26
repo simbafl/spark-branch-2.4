@@ -1,3 +1,5 @@
+## SparkContext入口函数
+
 1. SparkContext是pyspark的编程入口，作业的提交，任务的分发，应用的注册都会在SparkContext中进行。一个SparkContext实例代表着和Spark的一个连接，只有建立了连接才可以把作业提交到集群中去。实例化了SparkContext之后才能创建RDD和Broadcast广播变量。
 
 2. SparkContext获取，启动 pyspark -master local 之后，可以通过SparkSession获取SparkContext对象。
