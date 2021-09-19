@@ -1,53 +1,29 @@
-## 从源码开始剖析Spark
-从事数据开发搞不定Spark，就犹如身在少林寺却不会铁头功。不学Spark一时爽，面试时却一直酸爽。目前我一直调用的是pyspark， 但是为了搞懂Spark还必须学点scala。接下来，让我们走进Spark的源码世界。
+## 从源码剖析Spark
 
-需要提前掌握的知识：
-- Python
-- Scala语法
-- Hadoop原理
-- Shell基础
-- Sql基础
-- Graph算法原理
-- 机器学习原理
+2021年入手M1 Pro，打算体验一遍，于是给windows重装了系统。结果编译spark十几次不成功，最后被回复mac版本太新某些包存在bug。
+我就欲哭无泪，又被打回到了Windows。
 
-#### Python
+**版本：2.4.0**
+**完成时间：2021-08-27**
+
+- [spark编译](./images/spark编译.png)
+
+
+### pyspark
 1. [pyspark的模块介绍](./Pyspark/pyspark模块介绍.md)
-2. [SparkContext常用函数入口介绍](./Pyspark/SparkContext入口函数.md)  
 
-主要包括：
-> - SparkContext编程入口
-> - Accumulator累加器详解
-> - addFile和SparkFiles加载本地文件，HDFS文件，http文件
-> - binaryFiles读取二进制文件
-> - Broadcast广播变量
-> - setLogLevel日志级别
-> - runJob使用
-> - parallelize和range创建RDD详解
-> - union的使用
-> - statusTracker方法讲解
-> - saveAsPickleFile和saveAsTextFile和其他压缩格式
+
+### Spark
+2. [SparkContext常用函数入口介绍](./Pyspark/SparkContext入口函数.md)  
 3. [RDD算子介绍](./Pyspark/RDD算子.md)  
-主要包括：
-> - RDD算子的介绍
-> - action
-> - aggregate
-> - collect
-> - collectAsMap
-> - count
-> - countByKey
-> - countByValue
-> - first
-> - fold
-> - transformation
-    
 4. [SparkSQL编程入口](./Pyspark/SparkSQL编程入口SparkSession.md)
 5. [SparkSQL模块简介](./Pyspark/SparkSQL模块简介.md)
 6. [DataFrame创建的多种方式](./Pyspark/DataFrame创建的多种方式.md)
 7. [DataFrame常用函数](./Pyspark/DataFrame.md)
 
-#### Scala
-1. 下面先总结常用算子的原理
+#### 流程图
+1. 常用算子
 - [<font size=+1>distinct算子</font>](./images/distinct算子原理.png)
 
-2. Spark中间某些流程
+2. Spark处理流程
 - [spark任务执行流程](./images/spark任务流程.png)
