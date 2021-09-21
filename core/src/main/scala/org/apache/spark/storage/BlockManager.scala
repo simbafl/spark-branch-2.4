@@ -54,7 +54,7 @@ import org.apache.spark.shuffle.ShuffleManager
 import org.apache.spark.storage.memory._
 import org.apache.spark.unsafe.Platform
 import org.apache.spark.util._
-import org.apache.spark.util.io.ChunkedByteBuffer
+import org.apache.spark.util.io.ChunkedByteBuffer;
 
 /** 用于封装本地的BlockManager中获取的Block数据以及与 Block 相关联的度量数据 */
 private[spark] class BlockResult(
@@ -259,7 +259,7 @@ private[spark] class BlockManager(
       BlockManagerId(executorId, blockTransferService.hostName, externalShuffleServicePort)
     } else {
       blockManagerId
-    }
+    };
 
     // 启用了外部shuffle服务，并且当前BlockManager所在节点不是Driver时，需要注册外部的Shuffle服务
     if (externalShuffleServiceEnabled && !blockManagerId.isDriver) {
@@ -305,7 +305,7 @@ private[spark] class BlockManager(
             e.getMessage, e)
       }
     }
-  }
+  };
 
   /**
    * Report all blocks to the BlockManager again. This may be necessary if we are dropped
@@ -316,6 +316,8 @@ private[spark] class BlockManager(
    * the slave needs to re-register). The error condition will be detected again by the next
    * heart beat attempt or new block registration and another try to re-register all blocks
    * will be made then.
+   *
+   * 遍历entries列表，获取status
    */
   private def reportAllBlocks(): Unit = {
     logInfo(s"Reporting ${blockInfoManager.size} blocks to the master.")
@@ -326,13 +328,15 @@ private[spark] class BlockManager(
         return
       }
     }
-  }
+  };
 
   /**
    * Re-register with the master and report all blocks to it. This will be called by the heart beat
    * thread if our heartbeat to the block manager indicates that we were not registered.
    *
    * Note that this method must be called without any BlockInfo locks held.
+   *
+   * 用于向BlockManagerMaster重新注册BlockManager，并向BlockManagerMaster报告所有的Block信息
    */
   def reregister(): Unit = {
     // TODO: We might need to rate limit re-registering.
@@ -626,10 +630,12 @@ private[spark] class BlockManager(
           handleLocalReadFailure(blockId)
         }
     }
-  }
+  };
 
   /**
    * Get block from the local block manager as serialized bytes.
+   *
+   * 实际调用了doGetLocalBytes方法
    */
   def getLocalBytes(blockId: BlockId): Option[BlockData] = {
     logDebug(s"Getting local block $blockId as bytes")
@@ -654,10 +660,11 @@ private[spark] class BlockManager(
    * Releases the read lock upon exception; keeps the read lock upon successful return.
    */
   private def doGetLocalBytes(blockId: BlockId, info: BlockInfo): BlockData = {
-    val level = info.level
-    logDebug(s"Level for block $blockId is $level")
+    val level = info.level;  //  获取Block的存储级别
+    logDebug(s"Level for block $blockId is $level");
     // In order, try to read the serialized bytes from memory, then from disk, then fall back to
     // serializing in-memory objects, and, finally, throw an exception if the block does not exist.
+    // 如果Block没有被序列化，按照 DiskStore、MemoryStore的顺序获取Block数据
     if (level.deserialized) {
       // Try to avoid expensive serialization by reading a pre-serialized copy from disk:
       if (level.useDisk && diskStore.contains(blockId)) {
@@ -673,7 +680,7 @@ private[spark] class BlockManager(
       } else {
         handleLocalReadFailure(blockId)
       }
-    } else {  // storage level is serialized
+    } else {  // 如果Block被序列化了，按照 MemoryStore、DiskStore 的顺序获取Block数据
       if (level.useMemory && memoryStore.contains(blockId)) {
         new ByteBufferBlockData(memoryStore.getBytes(blockId).get, false)
       } else if (level.useDisk && diskStore.contains(blockId)) {
@@ -937,7 +944,7 @@ private[spark] class BlockManager(
     val syncWrites = conf.getBoolean("spark.shuffle.sync", false)
     new DiskBlockObjectWriter(file, serializerManager, serializerInstance, bufferSize,
       syncWrites, writeMetrics, blockId)
-  }
+  };
 
   /**
    * Put a new block of serialized bytes to the block manager.
@@ -946,6 +953,8 @@ private[spark] class BlockManager(
    * so may corrupt or change the data stored by the `BlockManager`.
    *
    * @return true if the block was stored or false if an error occurred.
+   *
+   * 实际调用了 doPutBytes方法
    */
   def putBytes[T: ClassTag](
       blockId: BlockId,
@@ -982,6 +991,7 @@ private[spark] class BlockManager(
       // Since we're storing bytes, initiate the replication before storing them locally.
       // This is faster as data is already serialized and ready to send.
       val replicationFuture = if (level.replication > 1) {
+        // 创建异步线程，通过replicate方法复制Block数据到其他节点的存储体系
         Future {
           // This is a blocking action and should run in futureExecutionContext which is a cached
           // thread pool. The ByteBufferBlockData wrapper is not disposed of to avoid releasing
@@ -992,8 +1002,8 @@ private[spark] class BlockManager(
         null
       }
 
-      val size = bytes.size
-
+      val size = bytes.size;
+      /** 优先使用内存 */
       if (level.useMemory) {
         // Put it in memory first, even if it also has useDisk set to true;
         // We will drop it to disk later if the memory store can't hold it.
@@ -1019,11 +1029,11 @@ private[spark] class BlockManager(
             }
           })
         }
-        if (!putSucceeded && level.useDisk) {
+        if (!putSucceeded && level.useDisk) {  // 内存不足，写入磁盘
           logWarning(s"Persisting block $blockId to disk instead.")
           diskStore.putBytes(blockId, bytes)
         }
-      } else if (level.useDisk) {
+      } else if (level.useDisk) {  // 不能使用内存时，写入磁盘
         diskStore.putBytes(blockId, bytes)
       }
 
@@ -1034,13 +1044,14 @@ private[spark] class BlockManager(
         // tell the master about it.
         info.size = size
         if (tellMaster && info.tellMaster) {
+          // 向BlockManagerMaster报告Block状态
           reportBlockStatus(blockId, putBlockStatus)
         }
         addUpdatedBlockStatusToTaskMetrics(blockId, putBlockStatus)
       }
       logDebug("Put block %s locally took %s".format(blockId, Utils.getUsedTimeMs(startTimeMs)))
       if (level.replication > 1) {
-        // Wait for asynchronous replication to finish
+        // 指定了replication就要等待异步的线程完成
         try {
           ThreadUtils.awaitReady(replicationFuture, Duration.Inf)
         } catch {
@@ -1054,13 +1065,15 @@ private[spark] class BlockManager(
         Some(bytes)
       }
     }.isEmpty
-  }
+  };
 
   /**
    * Helper method used to abstract common code from [[doPutBytes()]] and [[doPutIterator()]].
    *
    * @param putBody a function which attempts the actual put() and returns None on success
    *                or Some on failure.
+   *
+   *用于执行Block的写入
    */
   private def doPut[T](
       blockId: BlockId,
@@ -1073,7 +1086,8 @@ private[spark] class BlockManager(
     require(level != null && level.isValid, "StorageLevel is null or invalid")
 
     val putBlockInfo = {
-      val newInfo = new BlockInfo(level, classTag, tellMaster)
+      val newInfo = new BlockInfo(level, classTag, tellMaster);
+      // 获得Block的写锁
       if (blockInfoManager.lockNewBlockForWriting(blockId, newInfo)) {
         newInfo
       } else {
@@ -1089,16 +1103,17 @@ private[spark] class BlockManager(
     val startTimeMs = System.currentTimeMillis
     var exceptionWasThrown: Boolean = true
     val result: Option[T] = try {
-      val res = putBody(putBlockInfo)
+      val res = putBody(putBlockInfo);  // 执行Block写入
       exceptionWasThrown = false
       if (res.isEmpty) {
-        // the block was successfully stored
+        // Block成功存储，执行锁降级或释放锁
         if (keepReadLock) {
           blockInfoManager.downgradeLock(blockId)
         } else {
           blockInfoManager.unlock(blockId)
         }
       } else {
+        // Block存储失败，移除 blockId
         removeBlockInternal(blockId, tellMaster = false)
         logWarning(s"Putting block $blockId failed")
       }
@@ -1480,7 +1495,7 @@ private[spark] class BlockManager(
       level: StorageLevel,
       tellMaster: Boolean = true): Boolean = {
     putIterator(blockId, Iterator(value), level, tellMaster)
-  }
+  };
 
   /**
    * Drop a block from memory, possibly putting it on disk if applicable. Called when the memory
@@ -1492,16 +1507,20 @@ private[spark] class BlockManager(
    * This method does not release the write lock.
    *
    * @return the block's new effective StorageLevel.
+   *
+   * 用于从内存删除Block，当Block的存储级别允许写入磁盘，Block将被写入磁盘
+   * 此方法主要在内存不足，需要从内存腾出空闲空间时使用
    */
   private[storage] override def dropFromMemory[T: ClassTag](
       blockId: BlockId,
       data: () => Either[Array[T], ChunkedByteBuffer]): StorageLevel = {
-    logInfo(s"Dropping block $blockId from memory")
-    val info = blockInfoManager.assertBlockIsLockedForWriting(blockId)
-    var blockIsUpdated = false
-    val level = info.level
+    logInfo(s"Dropping block $blockId from memory");
+    // 确认当前任务线程是否已经持有BlockId对应的写锁，没有就抛出异常，有就返回 BlockInfo
+    val info = blockInfoManager.assertBlockIsLockedForWriting(blockId);
+    var blockIsUpdated = false;
+    val level = info.level;
 
-    // Drop to disk, if storage level requires
+    // 从磁盘删除Block
     if (level.useDisk && !diskStore.contains(blockId)) {
       logInfo(s"Writing block $blockId to disk")
       data() match {
@@ -1517,9 +1536,9 @@ private[spark] class BlockManager(
           diskStore.putBytes(blockId, bytes)
       }
       blockIsUpdated = true
-    }
+    };
 
-    // Actually drop from memory store
+    // 然后将内存中的Block删除
     val droppedMemorySize =
       if (memoryStore.contains(blockId)) memoryStore.getSize(blockId) else 0L
     val blockIsRemoved = memoryStore.remove(blockId)
@@ -1531,11 +1550,14 @@ private[spark] class BlockManager(
 
     val status = getCurrentBlockStatus(blockId, info)
     if (info.tellMaster) {
+      // 向 BlockManagerMaster 报告Block状态
       reportBlockStatus(blockId, status, droppedMemorySize)
-    }
+    };
     if (blockIsUpdated) {
+      // 更新任务度量信息
       addUpdatedBlockStatusToTaskMetrics(blockId, status)
-    }
+    };
+    // 返回Block的存储级别
     status.storageLevel
   }
 

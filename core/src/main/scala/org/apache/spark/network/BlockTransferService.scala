@@ -30,6 +30,7 @@ import org.apache.spark.network.shuffle.{BlockFetchingListener, DownloadFileMana
 import org.apache.spark.storage.{BlockId, EncryptedManagedBuffer, StorageLevel}
 import org.apache.spark.util.ThreadUtils
 
+/** 实现类 NettyBlockTransferService */
 private[spark]
 abstract class BlockTransferService extends ShuffleClient with Closeable with Logging {
 

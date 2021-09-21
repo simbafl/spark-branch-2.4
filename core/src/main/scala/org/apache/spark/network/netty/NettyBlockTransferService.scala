@@ -38,11 +38,12 @@ import org.apache.spark.network.shuffle.protocol.{UploadBlock, UploadBlockStream
 import org.apache.spark.network.util.JavaUtils
 import org.apache.spark.serializer.JavaSerializer
 import org.apache.spark.storage.{BlockId, StorageLevel}
-import org.apache.spark.util.Utils
+import org.apache.spark.util.Utils;
 
 /**
  * A BlockTransferService that uses Netty to fetch a set of blocks at time.
- * 通过 Netty 拉取块的服务
+ *
+ * NettyBlockTransferService 提供了可以被其他节点的客户端访问的Shuffle服务
  */
 private[spark] class NettyBlockTransferService(
     conf: SparkConf,
@@ -73,7 +74,7 @@ private[spark] class NettyBlockTransferService(
     }
     transportContext = new TransportContext(transportConf, rpcHandler)
     clientFactory = transportContext.createClientFactory(clientBootstrap.toSeq.asJava)
-    server = createServer(serverBootstrap.toList)
+    server = createServer(serverBootstrap.toList);  // TransportServer
     appId = conf.getAppId
     logInfo(s"Server created on ${hostName}:${server.getPort}")
   }

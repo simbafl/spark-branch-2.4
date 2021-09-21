@@ -273,11 +273,14 @@ private[storage] class BlockInfoManager extends Logging {
       }
     } while (blocking)
     None
-  }
+  };
 
   /**
    * Throws an exception if the current task does not hold a write lock on the given block.
    * Otherwise, returns the block's BlockInfo.
+   *
+   * assert使用
+   * 没有获得block的写锁，抛出异常
    */
   def assertBlockIsLockedForWriting(blockId: BlockId): BlockInfo = synchronized {
     infos.get(blockId) match {
@@ -345,7 +348,7 @@ private[storage] class BlockInfoManager extends Logging {
         s"Task $taskId release lock on block $blockId more times than it acquired it")
     }
     notifyAll()
-  }
+  };
 
   /**
    * Attempt to acquire the appropriate lock for writing a new block.

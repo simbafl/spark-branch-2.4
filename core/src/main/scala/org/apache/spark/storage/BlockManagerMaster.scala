@@ -25,10 +25,13 @@ import org.apache.spark.{SparkConf, SparkException}
 import org.apache.spark.internal.Logging
 import org.apache.spark.rpc.RpcEndpointRef
 import org.apache.spark.storage.BlockManagerMessages._
-import org.apache.spark.util.{RpcUtils, ThreadUtils}
+import org.apache.spark.util.{RpcUtils, ThreadUtils};
 
-private[spark]
-class BlockManagerMaster(
+/**
+ * BlockManagerMaster 作用是对存在于 Executor 或 Driver上的 BlockManager 进行统一管理
+ * Executor 或 Driver各有一个 BlockManagerMaster对象，各自管理各自节点的 BlockManager
+ */
+private[spark] class BlockManagerMaster(
     var driverEndpoint: RpcEndpointRef,
     conf: SparkConf,
     isDriver: Boolean)
@@ -48,12 +51,14 @@ class BlockManagerMaster(
   def removeExecutorAsync(execId: String) {
     driverEndpoint.ask[Boolean](RemoveExecutor(execId))
     logInfo("Removal of executor " + execId + " requested")
-  }
+  };
 
   /**
    * Register the BlockManager's id with the driver. The input BlockManagerId does not contain
    * topology information. This information is obtained from the master and we respond with an
    * updated BlockManagerId fleshed out with this information.
+   *
+   * 注册 BlockManager 的实质是向 BlockManagerMasterEndpoint 发送 RegisterBlockManager消息
    */
   def registerBlockManager(
       blockManagerId: BlockManagerId,
