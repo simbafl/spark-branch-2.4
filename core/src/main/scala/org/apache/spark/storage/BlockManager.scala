@@ -56,10 +56,10 @@ import org.apache.spark.unsafe.Platform
 import org.apache.spark.util._
 import org.apache.spark.util.io.ChunkedByteBuffer
 
-/* Class for returning a fetched block and associated metrics. */
+/** 用于封装本地的BlockManager中获取的Block数据以及与 Block 相关联的度量数据 */
 private[spark] class BlockResult(
-    val data: Iterator[Any],
-    val readMethod: DataReadMethod.Value,
+    val data: Iterator[Any], // Block以及Block的度量数据
+    val readMethod: DataReadMethod.Value,  // 枚举值， Memory, Disk, Hadoop, Network
     val bytes: Long)
 
 /**
@@ -230,9 +230,10 @@ private[spark] class BlockManager(
    * service if configured.
    */
   def initialize(appId: String): Unit = {
+    // 初始化 BlockTransferService 和 ShuffleClient
     blockTransferService.init(this)
-    shuffleClient.init(appId)
-
+    shuffleClient.init(appId);
+    // 设置 Block 的复制策略
     blockReplicationPolicy = {
       val priorityClass = conf.get(
         "spark.storage.replication.policy", classOf[RandomBlockReplicationPolicy].getName)
@@ -240,19 +241,19 @@ private[spark] class BlockManager(
       val ret = clazz.newInstance.asInstanceOf[BlockReplicationPolicy]
       logInfo(s"Using $priorityClass for block replication policy")
       ret
-    }
-
+    };
+    // 参考id
     val id =
-      BlockManagerId(executorId, blockTransferService.hostName, blockTransferService.port, None)
-
+      BlockManagerId(executorId, blockTransferService.hostName, blockTransferService.port, None);
+    // 创建了包含拓扑信息的新BlockManagerId作为正式的分配id
     val idFromMaster = master.registerBlockManager(
       id,
       maxOnHeapMemory,
       maxOffHeapMemory,
-      slaveEndpoint)
-
-    blockManagerId = if (idFromMaster != null) idFromMaster else id
-
+      slaveEndpoint);
+    // 生成当前BlockManager的BlockManagerId
+    blockManagerId = if (idFromMaster != null) idFromMaster else id;
+    // 生成 shuffleServerId，优先使用外部shuffle服务创建的id，其次是blockManagerId
     shuffleServerId = if (externalShuffleServiceEnabled) {
       logInfo(s"external shuffle service port = $externalShuffleServicePort")
       BlockManagerId(executorId, blockTransferService.hostName, externalShuffleServicePort)
@@ -260,9 +261,9 @@ private[spark] class BlockManager(
       blockManagerId
     }
 
-    // Register Executors' configuration with the local shuffle service, if one should exist.
+    // 启用了外部shuffle服务，并且当前BlockManager所在节点不是Driver时，需要注册外部的Shuffle服务
     if (externalShuffleServiceEnabled && !blockManagerId.isDriver) {
-      registerWithExternalShuffleServer()
+      registerWithExternalShuffleServer();  // 注册外部的shuffle服务
     }
 
     logInfo(s"Initialized BlockManager: $blockManagerId")

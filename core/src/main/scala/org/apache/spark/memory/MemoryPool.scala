@@ -26,6 +26,11 @@ import javax.annotation.concurrent.GuardedBy
  * @param lock a [[MemoryManager]] instance, used for synchronization. We purposely erase the type
  *             to `Object` to avoid programming errors, since this object should only be used for
  *             synchronization purposes.
+ *
+ *
+ *  MemoryPool的继承类：
+ *     StorageMemoryPool【存储体系用到的内存池】
+ *     ExecutionMemoryPool【计算引擎用到的内存池】
  */
 private[memory] abstract class MemoryPool(lock: Object) {
 
@@ -44,18 +49,22 @@ private[memory] abstract class MemoryPool(lock: Object) {
    */
   final def memoryFree: Long = lock.synchronized {
     _poolSize - memoryUsed
-  }
+  };
 
   /**
    * Expands the pool by `delta` bytes.
+   *
+   * 扩展delta大小的内存
    */
   final def incrementPoolSize(delta: Long): Unit = lock.synchronized {
     require(delta >= 0)
     _poolSize += delta
-  }
+  };
 
   /**
    * Shrinks the pool by `delta` bytes.
+   *
+   * 将内存池缩小delta给定的大小
    */
   final def decrementPoolSize(delta: Long): Unit = lock.synchronized {
     require(delta >= 0)

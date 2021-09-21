@@ -26,7 +26,7 @@ import org.apache.spark.storage.BlockId
 import org.apache.spark.storage.memory.MemoryStore
 import org.apache.spark.unsafe.Platform
 import org.apache.spark.unsafe.array.ByteArrayMethods
-import org.apache.spark.unsafe.memory.MemoryAllocator
+import org.apache.spark.unsafe.memory.MemoryAllocator;
 
 /**
  * An abstract memory manager that enforces how memory is shared between execution and storage.
@@ -34,28 +34,45 @@ import org.apache.spark.unsafe.memory.MemoryAllocator
  * In this context, execution memory refers to that used for computation in shuffles, joins,
  * sorts and aggregations, while storage memory refers to that used for caching and propagating
  * internal data across the cluster. There exists one MemoryManager per JVM.
+ *
+ * 内存管理器的接口规范
+ * 两个子类：StaticMemoryManager【静态内存管理】 和 UnifiedMemoryManager【动态内存管理】
  */
 private[spark] abstract class MemoryManager(
     conf: SparkConf,
     numCores: Int,
-    onHeapStorageMemory: Long,
-    onHeapExecutionMemory: Long) extends Logging {
+    onHeapStorageMemory: Long, // 用于存储的堆内存大小
+    onHeapExecutionMemory: Long) // 用于计算的堆内存大小
+  extends Logging {
 
   // -- Methods related to memory allocation policies and bookkeeping ------------------------------
-
+  /**
+   * 内存划分关系
+   * 堆外：
+   * maxOffHeapMemory -> offHeapStorageMemoryPool【memoryUsed + memoryFree】
+   *                  + offHeapExecutionMemoryPool【memoryUsed + memoryFree】
+   * 堆内：
+   * onHeapStorageMemoryPool【memoryUsed + memoryFree】
+   * onHeapExecutionMemoryPool 【memoryUsed + memoryFree】
+   * */
+  // 堆内存的存储内存池
   @GuardedBy("this")
-  protected val onHeapStorageMemoryPool = new StorageMemoryPool(this, MemoryMode.ON_HEAP)
+  protected val onHeapStorageMemoryPool = new StorageMemoryPool(this, MemoryMode.ON_HEAP);
+  // 堆外内存的存储内存池
   @GuardedBy("this")
-  protected val offHeapStorageMemoryPool = new StorageMemoryPool(this, MemoryMode.OFF_HEAP)
+  protected val offHeapStorageMemoryPool = new StorageMemoryPool(this, MemoryMode.OFF_HEAP);
+  // 堆内存的执行计算内存池
   @GuardedBy("this")
-  protected val onHeapExecutionMemoryPool = new ExecutionMemoryPool(this, MemoryMode.ON_HEAP)
+  protected val onHeapExecutionMemoryPool = new ExecutionMemoryPool(this, MemoryMode.ON_HEAP);
+  // 堆外存的执行计算内存池
   @GuardedBy("this")
-  protected val offHeapExecutionMemoryPool = new ExecutionMemoryPool(this, MemoryMode.OFF_HEAP)
+  protected val offHeapExecutionMemoryPool = new ExecutionMemoryPool(this, MemoryMode.OFF_HEAP);
 
   onHeapStorageMemoryPool.incrementPoolSize(onHeapStorageMemory)
-  onHeapExecutionMemoryPool.incrementPoolSize(onHeapExecutionMemory)
-
-  protected[this] val maxOffHeapMemory = conf.get(MEMORY_OFFHEAP_SIZE)
+  onHeapExecutionMemoryPool.incrementPoolSize(onHeapExecutionMemory);
+  // 堆外内存最大值
+  protected[this] val maxOffHeapMemory = conf.get(MEMORY_OFFHEAP_SIZE);
+  // 用于存储的堆外内存大小，可以指定比例
   protected[this] val offHeapStorageMemory =
     (maxOffHeapMemory * conf.getDouble("spark.memory.storageFraction", 0.5)).toLong
 
@@ -164,17 +181,21 @@ private[spark] abstract class MemoryManager(
    */
   final def releaseUnrollMemory(numBytes: Long, memoryMode: MemoryMode): Unit = synchronized {
     releaseStorageMemory(numBytes, memoryMode)
-  }
+  };
 
   /**
    * Execution memory currently in use, in bytes.
+   *
+   * 总的计算内存使用情况
    */
   final def executionMemoryUsed: Long = synchronized {
     onHeapExecutionMemoryPool.memoryUsed + offHeapExecutionMemoryPool.memoryUsed
-  }
+  };
 
   /**
    * Storage memory currently in use, in bytes.
+   *
+   * 总的存储内存使用情况
    */
   final def storageMemoryUsed: Long = synchronized {
     onHeapStorageMemoryPool.memoryUsed + offHeapStorageMemoryPool.memoryUsed

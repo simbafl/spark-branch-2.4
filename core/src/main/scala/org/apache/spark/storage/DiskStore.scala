@@ -47,25 +47,30 @@ private[spark] class DiskStore(
 
   private val minMemoryMapBytes = conf.getSizeAsBytes("spark.storage.memoryMapThreshold", "2m")
   private val maxMemoryMapBytes = conf.get(config.MEMORY_MAP_LIMIT_FOR_TESTS)
-  private val blockSizes = new ConcurrentHashMap[BlockId, Long]()
 
-  def getSize(blockId: BlockId): Long = blockSizes.get(blockId)
+  private val blockSizes = new ConcurrentHashMap[BlockId, Long]()
+  def getSize(blockId: BlockId): Long = blockSizes.get(blockId);
 
   /**
    * Invokes the provided callback function to write the specific block.
    *
    * @throws IllegalStateException if the block already exists in the disk store.
+   *
+   * 用于将BlockId所对应的Block写入磁盘
    */
   def put(blockId: BlockId)(writeFunc: WritableByteChannel => Unit): Unit = {
-    if (contains(blockId)) {
+    if (contains(blockId)) {  // 判断给定的BlockId所对应的Block文件是否存在
       throw new IllegalStateException(s"Block $blockId is already present in the disk store")
     }
     logDebug(s"Attempting to put block $blockId")
-    val startTime = System.currentTimeMillis
-    val file = diskManager.getFile(blockId)
+    val startTime = System.currentTimeMillis;
+    // 获取BlockId所对应的Block文件
+    val file = diskManager.getFile(blockId);
+    // out为自定义 WritableByteChannel 对象
     val out = new CountingWritableChannel(openForWrite(file))
     var threwException: Boolean = true
     try {
+      // 写入操作，同时更新blockSizes缓存
       writeFunc(out)
       blockSizes.put(blockId, out.getCount)
       threwException = false
@@ -80,6 +85,7 @@ private[spark] class DiskStore(
           }
       } finally {
          if (threwException) {
+           // 如果关闭失败要进行的操作
           remove(blockId)
         }
       }
@@ -92,8 +98,7 @@ private[spark] class DiskStore(
   }
 
   def putBytes(blockId: BlockId, bytes: ChunkedByteBuffer): Unit = {
-    put(blockId) { channel =>
-      bytes.writeFully(channel)
+    put(blockId) { channel => bytes.writeFully(channel)
     }
   }
 

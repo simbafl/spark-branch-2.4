@@ -483,6 +483,12 @@ class BlockManagerMasterEndpoint(
 
 @DeveloperApi
 case class BlockStatus(storageLevel: StorageLevel, memSize: Long, diskSize: Long) {
+  /*
+  * StorageLevel
+  * memSize: Block占用内存大小
+  * diskSize：Block占用磁盘大小
+  * isCached：判断 memSize + diskSize > 0
+  * */
   def isCached: Boolean = memSize + diskSize > 0
 }
 

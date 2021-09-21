@@ -1,4 +1,8 @@
 # Apache Spark
+本地编译注意事项：
+- mac版本太新，因为某些包来不及更新会编译失败【亲自测试M1多次】
+- windows在git bash上操作更顺畅【cmd的环境不适合】
+- 注意网络和内存
 
 ## 基础设施
 1. SparkConf - core.scala.SparkConf
@@ -40,3 +44,6 @@
    - BlockManager【块管理器】
 7. MetricsSystem：度量系统
 8. OutputCommitCoordinator：输出提交协调器【有任务需要输出到HDFS】
+
+
+# Pyspark

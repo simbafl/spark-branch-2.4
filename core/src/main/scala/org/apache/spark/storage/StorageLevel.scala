@@ -34,14 +34,16 @@ import org.apache.spark.util.Utils
  * The [[org.apache.spark.storage.StorageLevel]] singleton object contains some static constants
  * for commonly useful storage levels. To create your own storage level object, use the
  * factory method of the singleton object (`StorageLevel(...)`).
+ *
+ * 存储级别抽象
  */
 @DeveloperApi
 class StorageLevel private(
-    private var _useDisk: Boolean,
-    private var _useMemory: Boolean,
-    private var _useOffHeap: Boolean,
-    private var _deserialized: Boolean,
-    private var _replication: Int = 1)
+    private var _useDisk: Boolean,    // 能否写入磁盘
+    private var _useMemory: Boolean,  // 能否写入堆内存
+    private var _useOffHeap: Boolean,   // 能否写入堆外内存
+    private var _deserialized: Boolean,   // 是否需要对Block反序列化
+    private var _replication: Int = 1)    // Block的复制份数
   extends Externalizable {
 
   // TODO: Also add fields for caching priority, dataset ID, and flushing.
@@ -61,8 +63,9 @@ class StorageLevel private(
 
   if (useOffHeap) {
     require(!deserialized, "Off-heap storage level does not support deserialized storage")
-  }
+  };
 
+  //  OFF_HEAP 和 ON_HEAP
   private[spark] def memoryMode: MemoryMode = {
     if (useOffHeap) MemoryMode.OFF_HEAP
     else MemoryMode.ON_HEAP
@@ -83,8 +86,9 @@ class StorageLevel private(
       false
   }
 
-  def isValid: Boolean = (useMemory || useDisk) && (replication > 0)
+  def isValid: Boolean = (useMemory || useDisk) && (replication > 0);
 
+  /** 将存储级别转化成int  */
   def toInt: Int = {
     var ret = 0
     if (_useDisk) {
@@ -100,8 +104,10 @@ class StorageLevel private(
       ret |= 1
     }
     ret
-  }
+  };
 
+  /** 将StorageLevel首先转化成4位数的状态，
+   * 然后与 _replication 一起序列化写入外部二进制流 */
   override def writeExternal(out: ObjectOutput): Unit = Utils.tryOrIOException {
     out.writeByte(toInt)
     out.writeByte(_replication)

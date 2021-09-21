@@ -36,8 +36,8 @@ private[memory] class StorageMemoryPool(
   ) extends MemoryPool(lock) with Logging {
 
   private[this] val poolName: String = memoryMode match {
-    case MemoryMode.ON_HEAP => "on-heap storage"
-    case MemoryMode.OFF_HEAP => "off-heap storage"
+    case MemoryMode.ON_HEAP => "on-heap storage";   // 堆内内存，分配给JVM堆内存的一部分
+    case MemoryMode.OFF_HEAP => "off-heap storage";  // 堆外内存，使用[sun.misc.Unsafe]分配的内存
   }
 
   @GuardedBy("lock")
@@ -80,6 +80,8 @@ private[memory] class StorageMemoryPool(
    * @param numBytesToAcquire the size of this block
    * @param numBytesToFree the amount of space to be freed through evicting blocks
    * @return whether all N bytes were successfully granted.
+   *
+   * 用于给BlockId对应的Block获取numBytes指定大小的内存
    */
   def acquireMemory(
       blockId: BlockId,
@@ -90,10 +92,11 @@ private[memory] class StorageMemoryPool(
     assert(memoryUsed <= poolSize)
     if (numBytesToFree > 0) {
       memoryStore.evictBlocksToFreeSpace(Some(blockId), numBytesToFree, memoryMode)
-    }
+    };
     // NOTE: If the memory store evicts blocks, then those evictions will synchronously call
     // back into this StorageMemoryPool in order to free memory. Therefore, these variables
     // should have been updated.
+    // 判断内存是否充足
     val enoughMemory = numBytesToAcquire <= memoryFree
     if (enoughMemory) {
       _memoryUsed += numBytesToAcquire
@@ -101,6 +104,7 @@ private[memory] class StorageMemoryPool(
     enoughMemory
   }
 
+  /** 释放内存 */
   def releaseMemory(size: Long): Unit = lock.synchronized {
     if (size > _memoryUsed) {
       logWarning(s"Attempted to release $size bytes of storage " +
@@ -113,15 +117,18 @@ private[memory] class StorageMemoryPool(
 
   def releaseAllMemory(): Unit = lock.synchronized {
     _memoryUsed = 0
-  }
+  };
 
   /**
    * Free space to shrink the size of this storage memory pool by `spaceToFree` bytes.
    * Note: this method doesn't actually reduce the pool size but relies on the caller to do so.
    *
    * @return number of bytes to be removed from the pool's capacity.
+   *
+   * 释放指定大小的空间，缩小内存池的大小
    */
   def freeSpaceToShrinkPool(spaceToFree: Long): Long = lock.synchronized {
+    // 对比空闲内存 和 指定大小的内存
     val spaceFreedByReleasingUnusedMemory = math.min(spaceToFree, memoryFree)
     val remainingSpaceToFree = spaceToFree - spaceFreedByReleasingUnusedMemory
     if (remainingSpaceToFree > 0) {

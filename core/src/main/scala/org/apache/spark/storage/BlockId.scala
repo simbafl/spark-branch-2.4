@@ -33,16 +33,20 @@ import org.apache.spark.annotation.DeveloperApi
 @DeveloperApi
 sealed abstract class BlockId {
   /** A globally unique identifier for this Block. Can be used for ser/de. */
-  def name: String
+  def name: String; // Block全局唯一的标识名
 
   // convenience methods
   def asRDDId: Option[RDDBlockId] = if (isRDD) Some(asInstanceOf[RDDBlockId]) else None
-  def isRDD: Boolean = isInstanceOf[RDDBlockId]
-  def isShuffle: Boolean = isInstanceOf[ShuffleBlockId]
-  def isBroadcast: Boolean = isInstanceOf[BroadcastBlockId]
+  def isRDD: Boolean = isInstanceOf[RDDBlockId];  // 当前 BlockId 是否是 RDDBlockId
+  def isShuffle: Boolean = isInstanceOf[ShuffleBlockId];  // 当前 BlockId 是否是 ShuffleBlockId
+  def isBroadcast: Boolean = isInstanceOf[BroadcastBlockId];  // 当前 BlockId 是否是 BroadcastBlockId
 
   override def toString: String = name
-}
+};
+
+/**
+ * 以下都是 BlockId 的子类， 样例类
+ * */
 
 @DeveloperApi
 case class RDDBlockId(rddId: Int, splitIndex: Int) extends BlockId {
