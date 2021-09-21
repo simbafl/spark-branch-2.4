@@ -4,6 +4,9 @@
 - windows在git bash上操作更顺畅【cmd的环境不适合】
 - 注意网络和内存
 
+spark任务流程梳理：
+- [梳理](./images/spark任务流程.png)
+
 ## 基础设施
 1. SparkConf - core.scala.SparkConf
 2. RPC框架【对Netty API的封装】- common.network-common.java.org.apache.spark.network
